@@ -1,8 +1,11 @@
 package com.smart.Controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,11 +45,18 @@ public String signup(Model model) {
 }
 
 @RequestMapping(value ="/do_register", method=RequestMethod.POST)
-public String registerUser(@ModelAttribute("user") User user,@RequestParam(value = "agreement",defaultValue = "false")boolean agreement,Model model,HttpSession session) {
+public String registerUser(@Valid @ModelAttribute("user") User user,@RequestParam(value = "agreement",defaultValue = "false")boolean agreement,Model model,
+		BindingResult result1,HttpSession session) {
 	
 	try {
 		if(!agreement) {
 			 throw new Exception("You have not agred to terms and condition"); 
+		}
+		
+		if(result1.hasErrors()) {
+			System.out.println("result is"+ result1.toString());
+			model.addAttribute("user", user);
+			return "signup";
 		}
 		user.setRole("ROLE_USER");
 		user.setEnable(true);
